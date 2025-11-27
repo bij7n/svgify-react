@@ -1,0 +1,11 @@
+{
+  "inputDir": "./raw-icons",
+  "outputDir": "./src/icons",
+  "iconMode": "both",
+  "typescript": true,
+  "className": "icon",
+  "postGenerate": "",
+  "svgoConfig": {
+    "multipass": true
+  }
+}

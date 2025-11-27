@@ -1,0 +1,55 @@
+{
+  "name": "svgify-react",
+  "version": "1.0.0",
+  "description": "Convert SVG files to optimized React components with zero runtime dependencies",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "svgify": "bin/cli.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "test": "node bin/cli.js"
+  },
+  "keywords": [
+    "svg",
+    "react",
+    "icons",
+    "components",
+    "typescript",
+    "converter",
+    "generator",
+    "svgo",
+    "optimization"
+  ],
+  "author": "bij7n <7bijan@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bij7n/svgify-react.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bij7n/svgify-react/issues"
+  },
+  "homepage": "https://github.com/bij7n/svgify-react#readme",
+  "dependencies": {
+    "svgo": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  }
+}
