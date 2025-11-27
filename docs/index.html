@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>svgify-react - Convert SVG to React Components</title>
+  <link href="./output.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    code,
+    pre {
+      font-family: 'Fira Code', monospace;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .code-block {
+      background: #1e1e1e;
+      border-radius: 8px;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #374151;
+      color: #9ca3af;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .copy-btn:hover {
+      background: #4b5563;
+      color: #fff;
+    }
+
+    .copy-btn.copied {
+      background: #10b981;
+      color: white;
+    }
+
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .tab-button {
+      transition: all 0.3s ease;
+    }
+
+    .tab-button.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .pm-tab {
+      transition: all 0.2s;
+    }
+
+    .pm-tab.active {
+      background: #667eea;
+      color: white;
+    }
+
+    /* Syntax highlighting colors */
+    .syntax-keyword {
+      color: #c792ea;
+    }
+
+    .syntax-function {
+      color: #82aaff;
+    }
+
+    .syntax-string {
+      color: #c3e88d;
+    }
+
+    .syntax-number {
+      color: #f78c6c;
+    }
+
+    .syntax-comment {
+      color: #676e95;
+      font-style: italic;
+    }
+
+    .syntax-property {
+      color: #c792ea;
+    }
+
+    .syntax-tag {
+      color: #f07178;
+    }
+
+    .syntax-attr {
+      color: #c792ea;
+    }
+
+    .syntax-value {
+      color: #c3e88d;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+
+  <!-- Navigation -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-3">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 7.800000190734863 288.25 48.150001525878906"
+            data-asc="0.932" width="288.25" height="48.150001525878906">
+            <defs />
+            <g fill="#000000">
+              <g transform="translate(0, 0)">
+                <path
+                  d="M11.05 41.90Q14.45 41.90 16 40.75Q17.55 39.60 17.55 37.50Q17.55 36.25 17.03 35.35Q16.50 34.45 15.53 33.73Q14.55 33 13.15 32.38Q11.75 31.75 9.95 31.15Q8.15 30.50 6.48 29.73Q4.80 28.95 3.53 27.80Q2.25 26.65 1.48 25.05Q0.70 23.45 0.70 21.20Q0.70 16.50 3.95 13.83Q7.20 11.15 12.80 11.15Q16.05 11.15 18.58 11.88Q21.10 12.60 22.55 13.45L20.60 18.55Q18.90 17.60 16.88 17.10Q14.85 16.60 12.70 16.60Q10.15 16.60 8.73 17.65Q7.30 18.70 7.30 20.60Q7.30 21.75 7.78 22.57Q8.25 23.40 9.13 24.05Q10 24.70 11.18 25.25Q12.35 25.80 13.75 26.30Q16.20 27.20 18.13 28.13Q20.05 29.05 21.38 30.32Q22.70 31.60 23.40 33.33Q24.10 35.05 24.10 37.50Q24.10 42.20 20.78 44.77Q17.45 47.35 11.05 47.35Q8.90 47.35 7.13 47.08Q5.35 46.80 3.98 46.40Q2.60 46 1.60 45.58Q0.60 45.15 0 44.80L1.85 39.65Q3.20 40.40 5.50 41.15Q7.80 41.90 11.05 41.90ZM39.55 46.60Q35.80 38.50 32.33 29.65Q28.85 20.80 25.85 11.95L32.80 11.95Q34 15.45 35.25 19.10Q36.50 22.75 37.75 26.27Q39 29.80 40.25 33.10Q41.50 36.40 42.70 39.15Q43.85 36.40 45.10 33.13Q46.35 29.85 47.63 26.30Q48.90 22.75 50.15 19.10Q51.40 15.45 52.55 11.95L59.30 11.95Q56.25 20.80 52.80 29.65Q49.35 38.50 45.60 46.60L39.55 46.60ZM80 16.70Q74.65 16.70 71.83 20.02Q69 23.35 69 29.25Q69 32.05 69.67 34.38Q70.35 36.70 71.67 38.35Q73 40 74.97 40.92Q76.95 41.85 79.60 41.85Q81.25 41.85 82.45 41.73Q83.65 41.60 84.35 41.40L84.35 28.95L90.65 28.95L90.65 45.60Q89.35 46.10 86.25 46.70Q83.15 47.30 79.10 47.30Q75.35 47.30 72.25 46.10Q69.15 44.90 66.97 42.60Q64.80 40.30 63.60 36.95Q62.40 33.60 62.40 29.25Q62.40 24.90 63.73 21.55Q65.05 18.20 67.35 15.88Q69.65 13.55 72.75 12.35Q75.85 11.15 79.35 11.15Q81.75 11.15 83.63 11.48Q85.50 11.80 86.85 12.20Q88.20 12.60 89.08 13.05Q89.95 13.50 90.30 13.70L88.40 18.85Q86.90 17.95 84.67 17.32Q82.45 16.70 80 16.70ZM103.75 46.60L97.70 46.60L97.70 20.45L103.75 20.45L103.75 46.60M104.40 12.80Q104.40 14.50 103.30 15.50Q102.20 16.50 100.70 16.50Q99.15 16.50 98.05 15.50Q96.95 14.50 96.95 12.80Q96.95 11.05 98.05 10.05Q99.15 9.05 100.70 9.05Q102.20 9.05 103.30 10.05Q104.40 11.05 104.40 12.80ZM122.10 7.80Q124.20 7.80 125.80 8.17Q127.40 8.55 128.20 8.85L127.05 13.85Q126.20 13.45 125.07 13.20Q123.95 12.95 122.65 12.95Q121.20 12.95 120.20 13.38Q119.20 13.80 118.60 14.55Q118 15.30 117.75 16.38Q117.50 17.45 117.50 18.70L117.50 20.45L127 20.45L127 25.50L117.50 25.50L117.50 46.60L111.45 46.60L111.45 18.60Q111.45 13.55 114.10 10.67Q116.75 7.80 122.10 7.80ZM152.80 20.45Q148.75 35.35 143.40 47.45Q142.40 49.70 141.35 51.30Q140.30 52.90 139 53.95Q137.70 55 136.10 55.48Q134.50 55.95 132.40 55.95Q131 55.95 129.63 55.65Q128.25 55.35 127.55 55L128.65 50.15Q130.45 50.85 132.20 50.85Q134.55 50.85 135.88 49.73Q137.20 48.60 138.20 46.25Q135.35 40.75 132.72 34.25Q130.10 27.75 128.05 20.45L134.50 20.45Q135 22.55 135.72 25Q136.45 27.45 137.30 29.98Q138.15 32.50 139.10 35Q140.05 37.50 141 39.65Q142.60 35.20 144 30.18Q145.40 25.15 146.55 20.45L152.80 20.45ZM154.70 29.55L168.15 29.55L168.15 35.10L154.70 35.10L154.70 29.55ZM188.05 25.90Q187.30 25.65 185.98 25.38Q184.65 25.10 182.90 25.10Q181.90 25.10 180.78 25.30Q179.65 25.50 179.20 25.65L179.20 46.60L173.15 46.60L173.15 21.70Q174.90 21.05 177.53 20.48Q180.15 19.90 183.35 19.90Q183.95 19.90 184.75 19.98Q185.55 20.05 186.35 20.18Q187.15 20.30 187.90 20.48Q188.65 20.65 189.10 20.80L188.05 25.90ZM191.85 33.65Q191.85 30.20 192.88 27.60Q193.90 25 195.60 23.27Q197.30 21.55 199.50 20.68Q201.70 19.80 204.00 19.80Q209.40 19.80 212.43 23.15Q215.45 26.50 215.45 33.15Q215.45 33.65 215.43 34.27Q215.40 34.90 215.35 35.40L198.10 35.40Q198.35 38.55 200.33 40.27Q202.30 42 206.05 42Q208.25 42 210.08 41.60Q211.90 41.20 212.95 40.75L213.75 45.70Q213.25 45.95 212.38 46.23Q211.50 46.50 210.38 46.73Q209.25 46.95 207.95 47.10Q206.65 47.25 205.30 47.25Q201.85 47.25 199.30 46.23Q196.75 45.20 195.10 43.38Q193.45 41.55 192.65 39.08Q191.85 36.60 191.85 33.65M209.40 30.95Q209.40 29.70 209.05 28.57Q208.70 27.45 208.03 26.63Q207.35 25.80 206.38 25.32Q205.40 24.85 204.05 24.85Q202.65 24.85 201.60 25.38Q200.55 25.90 199.83 26.75Q199.10 27.60 198.70 28.70Q198.30 29.80 198.15 30.95L209.40 30.95ZM231.05 42.35Q233.85 42.35 235.30 42.05L235.30 35.35Q234.80 35.20 233.85 35.05Q232.90 34.90 231.75 34.90Q230.75 34.90 229.73 35.05Q228.70 35.20 227.88 35.60Q227.05 36 226.55 36.73Q226.05 37.45 226.05 38.55Q226.05 40.70 227.40 41.52Q228.75 42.35 231.05 42.35M230.55 19.80Q233.55 19.80 235.60 20.55Q237.65 21.30 238.88 22.65Q240.10 24 240.63 25.93Q241.15 27.85 241.15 30.15L241.15 46Q239.75 46.30 236.93 46.73Q234.10 47.15 230.55 47.15Q228.20 47.15 226.25 46.70Q224.30 46.25 222.93 45.25Q221.55 44.25 220.78 42.65Q220.00 41.05 220.00 38.70Q220.00 36.45 220.88 34.90Q221.75 33.35 223.25 32.38Q224.75 31.40 226.73 30.98Q228.70 30.55 230.85 30.55Q231.85 30.55 232.95 30.68Q234.05 30.80 235.30 31.10L235.30 30.10Q235.30 29.05 235.05 28.10Q234.80 27.15 234.18 26.43Q233.55 25.70 232.53 25.30Q231.50 24.90 229.95 24.90Q227.85 24.90 226.10 25.20Q224.35 25.50 223.25 25.90L222.50 21Q223.65 20.60 225.85 20.20Q228.05 19.80 230.55 19.80ZM247.10 33.55Q247.10 30.65 248.00 28.13Q248.90 25.60 250.58 23.75Q252.25 21.90 254.65 20.85Q257.05 19.80 260.05 19.80Q263.75 19.80 267.05 21.15L265.75 26.10Q264.70 25.65 263.38 25.35Q262.05 25.05 260.55 25.05Q257.00 25.05 255.15 27.27Q253.30 29.50 253.30 33.55Q253.30 37.45 255.05 39.73Q256.80 42 260.95 42Q262.50 42 264.00 41.70Q265.50 41.40 266.60 40.95L267.45 45.95Q266.45 46.45 264.43 46.85Q262.40 47.25 260.25 47.25Q256.90 47.25 254.43 46.23Q251.95 45.20 250.33 43.38Q248.70 41.55 247.90 39.02Q247.10 36.50 247.10 33.55ZM271.85 13.55L277.90 12.55L277.90 20.45L287.20 20.45L287.20 25.50L277.90 25.50L277.90 36.15Q277.90 39.30 278.90 40.65Q279.90 42 282.30 42Q283.95 42 285.23 41.65Q286.50 41.30 287.25 41L288.25 45.80Q287.20 46.25 285.50 46.73Q283.80 47.20 281.50 47.20Q278.70 47.20 276.83 46.45Q274.95 45.70 273.85 44.27Q272.75 42.85 272.30 40.83Q271.85 38.80 271.85 36.20L271.85 13.55Z" />
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="hidden md:flex space-x-6">
+          <a href="#features" class="text-gray-700 hover:text-purple-600 transition">Features</a>
+          <a href="#installation" class="text-gray-700 hover:text-purple-600 transition">Installation</a>
+          <a href="#config" class="text-gray-700 hover:text-purple-600 transition">Configuration</a>
+          <a href="#usage" class="text-gray-700 hover:text-purple-600 transition">Usage</a>
+        </div>
+        <a href="https://github.com/bij7n/svgify-react" target="_blank"
+          class="hidden md:block bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">
+          GitHub
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="gradient-bg text-white py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6">
+        Transform SVG Files into<br>Optimized React Components
+      </h1>
+      <p class="text-xl md:text-2xl mb-8 text-purple-100">
+        Zero runtime dependencies • Framework agnostic • TypeScript ready • Fully customizable
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button onclick="scrollToSection('installation')"
+          class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition">
+          Get Started
+        </button>
+        <button onclick="scrollToSection('config')"
+          class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-purple-600 transition">
+          View Documentation
+        </button>
+      </div>
+
+      <!-- Quick Preview -->
+      <div class="mt-12 bg-white/10 backdrop-blur-lg rounded-lg p-6 text-left max-w-3xl mx-auto">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm font-semibold text-purple-200">Quick Example</span>
+          <span class="text-xs text-purple-300">svgify.config.json</span>
+        </div>
+        <pre class="text-sm overflow-x-auto"><code class="text-purple-100">{
+  "inputDir": "./raw-icons",
+  "outputDir": "./src/icons",
+  "iconMode": "both",
+  "className": "icon"
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-bold text-center mb-4 gradient-text">Why svgify-react?</h2>
+      <p class="text-center text-gray-600 mb-12 text-lg">Built for developers who need flexibility without bloat</p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Zero Runtime Dependencies</h3>
+          <p class="text-gray-600">Generated components have no external dependencies. All utilities are copied to your
+            output directory.</p>
+        </div>
+
+        <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Framework Agnostic Styling</h3>
+          <p class="text-gray-600">Works with Tailwind, CSS Modules, styled-components, or plain CSS. No styling
+            opinions forced.</p>
+        </div>
+
+        <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">TypeScript & JavaScript</h3>
+          <p class="text-gray-600">Full TypeScript support with proper type definitions. Optional JavaScript output for
+            flexibility.</p>
+        </div>
+
+        <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Flexible Usage Modes</h3>
+          <p class="text-gray-600">Choose direct imports, string-based registry, or both. Optimize for your needs.</p>
+        </div>
+
+        <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">SVGO Optimization</h3>
+          <p class="text-gray-600">Automatic SVG optimization with customizable SVGO configuration. Smaller file sizes,
+            better performance.</p>
+        </div>
+
+        <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2">Post-Generation Hooks</h3>
+          <p class="text-gray-600">Run custom commands after generation. Format with Biome, Prettier, or any tool you
+            prefer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation Section -->
+  <section id="installation" class="py-20 bg-gray-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-bold text-center mb-12 gradient-text">Getting Started</h2>
+
+      <div class="space-y-8">
+        <!-- Step 1 - Package Manager Tabs -->
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+          <div class="flex items-start gap-4">
+            <div class="step-number">1</div>
+            <div class="flex-1">
+              <h3 class="text-2xl font-bold mb-3">Install the package</h3>
+
+              <!-- Package Manager Tabs -->
+              <div class="flex gap-2 mb-3">
+                <button onclick="showPmTab('npm')" id="pm-npm"
+                  class="pm-tab active px-4 py-2 rounded-lg text-sm font-semibold bg-purple-600 text-white">npm</button>
+                <button onclick="showPmTab('yarn')" id="pm-yarn"
+                  class="pm-tab px-4 py-2 rounded-lg text-sm font-semibold bg-gray-200">yarn</button>
+                <button onclick="showPmTab('pnpm')" id="pm-pnpm"
+                  class="pm-tab px-4 py-2 rounded-lg text-sm font-semibold bg-gray-200">pnpm</button>
+                <button onclick="showPmTab('bun')" id="pm-bun"
+                  class="pm-tab px-4 py-2 rounded-lg text-sm font-semibold bg-gray-200">bun</button>
+              </div>
+
+              <!-- Package Manager Commands -->
+              <div id="pm-npm-cmd" class="pm-content code-block p-4">
+                <button onclick="copyToClipboard('npm install -D svgify-react', this)" class="copy-btn">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy
+                </button>
+                <code class="text-green-400">npm install -D svgify-react</code>
+              </div>
+              <div id="pm-yarn-cmd" class="pm-content code-block p-4 hidden">
+                <button onclick="copyToClipboard('yarn add -D svgify-react', this)" class="copy-btn">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy
+                </button>
+                <code class="text-blue-400">yarn add -D svgify-react</code>
+              </div>
+              <div id="pm-pnpm-cmd" class="pm-content code-block p-4 hidden">
+                <button onclick="copyToClipboard('pnpm add -D svgify-react', this)" class="copy-btn">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy
+                </button>
+                <code class="text-purple-400">pnpm add -D svgify-react</code>
+              </div>
+              <div id="pm-bun-cmd" class="pm-content code-block p-4 hidden">
+                <button onclick="copyToClipboard('bun add -D svgify-react', this)" class="copy-btn">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy
+                </button>
+                <code class="text-orange-400">bun add -D svgify-react</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+          <div class="flex items-start gap-4">
+            <div class="step-number">2</div>
+            <div class="flex-1">
+              <h3 class="text-2xl font-bold mb-3">Create configuration file</h3>
+              <p class="text-gray-600 mb-3">Create <code
+                  class="bg-gray-100 px-2 py-1 rounded text-sm">svgify.config.json</code> in your project root:</p>
+              <div class="code-block p-4">
+                <button onclick="copyToClipboard('{\n  &quot;inputDir&quot;: &quot;./raw-icons&quot;,\n  &quot;outputDir&quot;: &quot;./src/icons&quot;\n}', this)" class="copy-btn">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy
+                </button>
+                <pre class="text-sm"><code class="text-gray-300">{
+  "inputDir": "./raw-icons",
+  "outputDir": "./src/icons"
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+          <div class="flex items-start gap-4">
+            <div class="step-number">3</div>
+            <div class="flex-1">
+              <h3 class="text-2xl font-bold mb-3">Add SVG files</h3>
+              <p class="text-gray-600 mb-3">Place your SVG files in the input directory:</p>
+              <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <pre class="text-sm text-gray-700">raw-icons/
+├── dashboard.svg
+├── settings.svg
+├── user.svg
+└── ...</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+          <div class="flex items-start gap-4">
+            <div class="step-number">4</div>
+            <div class="flex-1">
+              <h3 class="text-2xl font-bold mb-3">Generate components</h3>
+              <div class="code-block p-4 mb-3">
+                <button onclick="copyToClipboard('npx svgify', this)" class="copy-btn">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy
+                </button>
+                <code class="text-yellow-400">npx svgify</code>
+              </div>
+              <p class="text-gray-600">Or add to your package.json scripts:</p>
+              <div class="code-block p-4 mt-3">
+                <button onclick="copyToClipboard('{\n  &quot;scripts&quot;: {\n    &quot;icons&quot;: &quot;svgify&quot;\n  }\n}', this)"
+                  class="copy-btn">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy
+                </button>
+                <pre class="text-sm"><code class="text-gray-300">{
+  "scripts": {
+    "icons": "svgify"
+  }
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Configuration Section -->
+  <section id="config" class="py-20 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-bold text-center mb-4 gradient-text">Configuration Reference</h2>
+      <p class="text-center text-gray-600 mb-12 text-lg">Complete configuration options for svgify.config.json</p>
+
+      <div class="bg-gray-50 rounded-xl p-8 border border-gray-200">
+        <div class="space-y-6">
+          <!-- Required Fields -->
+          <div>
+            <h3 class="text-xl font-bold mb-4 text-purple-600">Required Fields</h3>
+            <div class="space-y-4">
+              <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <div class="flex items-start justify-between mb-2">
+                  <code class="text-lg font-semibold text-gray-800">inputDir</code>
+                  <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-semibold">REQUIRED</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-2">Path to directory containing raw SVG files</p>
+                <div class="code-block p-2">
+                  <code class="text-sm text-green-400">"inputDir": "./raw-icons"</code>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <div class="flex items-start justify-between mb-2">
+                  <code class="text-lg font-semibold text-gray-800">outputDir</code>
+                  <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-semibold">REQUIRED</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-2">Path where generated components will be saved</p>
+                <div class="code-block p-2">
+                  <code class="text-sm text-green-400">"outputDir": "./src/icons"</code>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optional Fields -->
+          <div>
+            <h3 class="text-xl font-bold mb-4 text-purple-600">Optional Fields</h3>
+            <div class="space-y-4">
+              <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <div class="flex items-start justify-between mb-2">
+                  <code class="text-lg font-semibold text-gray-800">iconMode</code>
+                  <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">default: "both"</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-2">Generation mode: <code
+                    class="bg-gray-100 px-1 rounded">"direct"</code>, <code
+                    class="bg-gray-100 px-1 rounded">"registry"</code>, or <code
+                    class="bg-gray-100 px-1 rounded">"both"</code></p>
+                <div class="code-block p-2">
+                  <code class="text-sm text-blue-400">"iconMode": "both"</code>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <div class="flex items-start justify-between mb-2">
+                  <code class="text-lg font-semibold text-gray-800">typescript</code>
+                  <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">default: true</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-2">Generate TypeScript (.tsx) or JavaScript (.jsx) files</p>
+                <div class="code-block p-2">
+                  <code class="text-sm text-blue-400">"typescript": true</code>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <div class="flex items-start justify-between mb-2">
+                  <code class="text-lg font-semibold text-gray-800">className</code>
+                  <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">default: "icon"</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-2">Base className added to all icon components</p>
+                <div class="code-block p-2">
+                  <code class="text-sm text-blue-400">"className": "icon"</code>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <div class="flex items-start justify-between mb-2">
+                  <code class="text-lg font-semibold text-gray-800">postGenerate</code>
+                  <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">default: ""</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-2">Command to run after generation (formatting, linting, etc.)</p>
+                <div class="code-block p-2">
+                  <code class="text-sm text-blue-400">"postGenerate": "biome format --write src/"</code>
+                </div>
+              </div>
+
+              <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <div class="flex items-start justify-between mb-2">
+                  <code class="text-lg font-semibold text-gray-800">svgoConfig</code>
+                  <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">optional</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-2">Custom SVGO configuration for SVG optimization</p>
+                <div class="code-block p-2">
+                  <code class="text-sm text-blue-400">"svgoConfig": { "multipass": true }</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Config Generator -->
+      <div class="mt-12 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 border border-purple-200">
+        <h3 class="text-2xl font-bold mb-6 text-center">Interactive Config Generator</h3>
+
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-sm font-semibold mb-2">Input Directory *</label>
+            <input type="text" id="configInputDir" value="./raw-icons"
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2">Output Directory *</label>
+            <input type="text" id="configOutputDir" value="./src/icons"
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2">Icon Mode</label>
+            <select id="configIconMode"
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none">
+              <option value="both">both</option>
+              <option value="direct">direct</option>
+              <option value="registry">registry</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2">Base Class Name</label>
+            <input type="text" id="configClassName" value="icon"
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2">TypeScript</label>
+            <select id="configTypescript"
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none">
+              <option value="true">true</option>
+              <option value="false">false</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold mb-2">Post Generate Command</label>
+            <input type="text" id="configPostGenerate" placeholder="e.g., biome format --write src/"
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none">
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 border border-gray-200">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-semibold">Generated Config</h4>
+            <button onclick="copyConfig()"
+              class="flex items-center gap-2 text-purple-600 hover:text-purple-700 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span id="copy-config-text">Copy</span>
+            </button>
+          </div>
+          <div class="code-block p-4">
+            <pre id="generatedConfig" class="text-sm text-gray-300"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Usage Section -->
+  <section id="usage" class="py-20 bg-gray-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-4xl font-bold text-center mb-4 gradient-text">Usage Examples</h2>
+      <p class="text-center text-gray-600 mb-12 text-lg">Multiple ways to use your generated icons</p>
+
+      <!-- Tabs -->
+      <div class="flex justify-center gap-2 mb-8">
+        <button onclick="showTab('direct')" id="tab-direct"
+          class="tab-button active px-6 py-3 rounded-lg font-semibold">
+          Direct Import
+        </button>
+        <button onclick="showTab('registry')" id="tab-registry"
+          class="tab-button px-6 py-3 rounded-lg font-semibold bg-gray-200">
+          Registry (String-based)
+        </button>
+        <button onclick="showTab('both')" id="tab-both"
+          class="tab-button px-6 py-3 rounded-lg font-semibold bg-gray-200">
+          Both Modes
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div id="content-direct" class="tab-content">
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+          <h3 class="text-2xl font-bold mb-4">Direct Import Mode</h3>
+          <p class="text-gray-600 mb-6">Import individual icon components directly. Best for tree-shaking and
+            performance.</p>
+
+          <div class="code-block p-4 mb-4">
+            <pre class="text-sm text-gray-300"><code><span class="syntax-keyword">import</span> { <span class="syntax-function">DashboardIcon</span>, <span class="syntax-function">SettingsIcon</span> } <span class="syntax-keyword">from</span> <span class="syntax-string">'./icons'</span>;
+
+<span class="syntax-keyword">function</span> <span class="syntax-function">App</span>() {
+  <span class="syntax-keyword">return</span> (
+    <span class="syntax-tag">&lt;div&gt;</span>
+      <span class="syntax-tag">&lt;DashboardIcon</span> <span class="syntax-attr">size</span>=<span class="syntax-value">{24}</span> <span class="syntax-attr">className</span>=<span class="syntax-string">"text-blue-500"</span> <span class="syntax-tag">/&gt;</span>
+      <span class="syntax-tag">&lt;SettingsIcon</span> <span class="syntax-attr">width</span>=<span class="syntax-value">{32}</span> <span class="syntax-attr">height</span>=<span class="syntax-value">{32}</span> <span class="syntax-attr">color</span>=<span class="syntax-string">"#ff0000"</span> <span class="syntax-tag">/&gt;</span>
+    <span class="syntax-tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <h4 class="font-semibold mb-2 text-purple-900">✨ Props Available:</h4>
+            <ul class="text-sm text-purple-800 space-y-1">
+              <li>• <code class="bg-purple-100 px-1 rounded">size</code> - Sets both width and height</li>
+              <li>• <code class="bg-purple-100 px-1 rounded">width</code> - Custom width</li>
+              <li>• <code class="bg-purple-100 px-1 rounded">height</code> - Custom height (defaults to width)</li>
+              <li>• <code class="bg-purple-100 px-1 rounded">color</code> - SVG fill color (default: currentColor)</li>
+              <li>• <code class="bg-purple-100 px-1 rounded">className</code> - CSS classes</li>
+              <li>• <code class="bg-purple-100 px-1 rounded">...rest</code> - All standard SVG props</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="content-registry" class="tab-content hidden">
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+          <h3 class="text-2xl font-bold mb-4">Registry Mode (String-based)</h3>
+          <p class="text-gray-600 mb-6">Use icon names as strings. Perfect for dynamic icon selection and CMS
+            integration.</p>
+
+          <div class="code-block text-gray-300 p-4 mb-4">
+            <pre class="text-sm"><code><span class="syntax-keyword">import</span> { <span class="syntax-function">Icon</span> } <span class="syntax-keyword">from</span> <span class="syntax-string">'./icons'</span>;
+
+<span class="syntax-keyword">function</span> <span class="syntax-function">App</span>() {
+  <span class="syntax-keyword">const</span> iconName = <span class="syntax-string">'dashboard'</span>; <span class="syntax-comment">// Dynamic!</span>
+  
+  <span class="syntax-keyword">return</span> (
+    <span class="syntax-tag">&lt;div&gt;</span>
+      <span class="syntax-tag">&lt;Icon</span> <span class="syntax-attr">icon</span>=<span class="syntax-string">"dashboard"</span> <span class="syntax-attr">size</span>=<span class="syntax-value">{24}</span> <span class="syntax-attr">className</span>=<span class="syntax-string">"text-blue-500"</span> <span class="syntax-tag">/&gt;</span>
+      <span class="syntax-tag">&lt;Icon</span> <span class="syntax-attr">icon</span>=<span class="syntax-value">{iconName}</span> <span class="syntax-attr">width</span>=<span class="syntax-value">{32}</span> <span class="syntax-attr">color</span>=<span class="syntax-string">"#ff0000"</span> <span class="syntax-tag">/&gt;</span>
+    <span class="syntax-tag">&lt;/div&gt;</span>
+  );
+}</code></pre>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 class="font-semibold mb-2 text-blue-900">🎯 Perfect for:</h4>
+            <ul class="text-sm text-blue-800 space-y-1">
+              <li>• Dynamic icon selection from API/CMS</li>
+              <li>• Icon pickers and selectors</li>
+              <li>• Configuration-driven UIs</li>
+              <li>• Reduced bundle size (lazy loading friendly)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="content-both" class="tab-content hidden">
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+          <h3 class="text-2xl font-bold mb-4">Both Modes (Default)</h3>
+          <p class="text-gray-600 mb-6">Get the best of both worlds. Use direct imports for performance-critical areas
+            and registry for dynamic scenarios.</p>
+
+          <div class="code-block text-gray-300 p-4 mb-4">
+            <pre class="text-sm"><code><span class="syntax-keyword">import</span> { <span class="syntax-function">Icon</span>, <span class="syntax-function">DashboardIcon</span> } <span class="syntax-keyword">from</span> <span class="syntax-string">'./icons'</span>;
+
+<span class="syntax-keyword">function</span> <span class="syntax-function">App</span>() {
+  <span class="syntax-comment">// Direct import - best performance</span>
+  <span class="syntax-keyword">const</span> header = <span class="syntax-tag">&lt;DashboardIcon</span> <span class="syntax-attr">size</span>=<span class="syntax-value">{24}</span> <span class="syntax-tag">/&gt;</span>;
+  
+  <span class="syntax-comment">// String-based - dynamic selection</span>
+  <span class="syntax-keyword">const</span> menuIcons = [<span class="syntax-string">'dashboard'</span>, <span class="syntax-string">'settings'</span>, <span class="syntax-string">'user'</span>].<span class="syntax-function">map</span>(name <span class="syntax-keyword">=&gt;</span> (
+    <span class="syntax-tag">&lt;Icon</span> <span class="syntax-attr">key</span>=<span class="syntax-value">{name}</span> <span class="syntax-attr">icon</span>=<span class="syntax-value">{name}</span> <span class="syntax-attr">size</span>=<span class="syntax-value">{20}</span> <span class="syntax-tag">/&gt;</span>
+  ));
+  
+  <span class="syntax-keyword">return</span> <span class="syntax-tag">&lt;div&gt;</span>{header}{menuIcons}<span class="syntax-tag">&lt;/div&gt;</span>;
+}</code></pre>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+              <h4 class="font-semibold mb-2 text-green-900">Direct Import ⚡</h4>
+              <ul class="text-sm text-green-800 space-y-1">
+                <li>✓ Tree-shakeable</li>
+                <li>✓ Type-safe</li>
+                <li>✓ Better performance</li>
+                <li>✓ Smaller bundles</li>
+              </ul>
+            </div>
+            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <h4 class="font-semibold mb-2 text-orange-900">Registry 🎯</h4>
+              <ul class="text-sm text-orange-800 space-y-1">
+                <li>✓ Dynamic selection</li>
+                <li>✓ CMS-friendly</li>
+                <li>✓ Flexible</li>
+                <li>✓ String-based API</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Styling Examples -->
+      <div class="mt-12 bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+        <h3 class="text-2xl font-bold mb-6">Styling Examples</h3>
+
+        <div class="space-y-6">
+          <!-- Tailwind -->
+          <div>
+            <h4 class="font-semibold mb-3 flex items-center gap-2">
+              <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
+              With Tailwind CSS
+            </h4>
+            <div class="code-block text-gray-300 p-4">
+              <pre
+                class="text-sm"><code><span class="syntax-tag">&lt;Icon</span> <span class="syntax-attr">icon</span>=<span class="syntax-string">"dashboard"</span> <span class="syntax-attr">className</span>=<span class="syntax-string">"w-6 h-6 text-blue-500 hover:text-blue-700"</span> <span class="syntax-tag">/&gt;</span></code></pre>
+            </div>
+          </div>
+
+          <!-- CSS Modules -->
+          <div>
+            <h4 class="font-semibold mb-3 flex items-center gap-2">
+              <span class="w-3 h-3 bg-purple-500 rounded-full"></span>
+              With CSS Modules
+            </h4>
+            <div class="code-block text-gray-300 p-4">
+              <pre
+                class="text-sm"><code><span class="syntax-keyword">import</span> styles <span class="syntax-keyword">from</span> <span class="syntax-string">'./styles.module.css'</span>;
+
+<span class="syntax-tag">&lt;Icon</span> <span class="syntax-attr">icon</span>=<span class="syntax-string">"dashboard"</span> <span class="syntax-attr">className</span>=<span class="syntax-value">{styles.myIcon}</span> <span class="syntax-tag">/&gt;</span></code></pre>
+            </div>
+          </div>
+
+          <!-- Plain CSS -->
+          <div>
+            <h4 class="font-semibold mb-3 flex items-center gap-2">
+              <span class="w-3 h-3 bg-green-500 rounded-full"></span>
+              With Plain CSS
+            </h4>
+            <div class="code-block text-gray-300 p-4">
+              <pre
+                class="text-sm"><code><span class="syntax-comment">/* styles.css */</span>
+<span class="syntax-property">.icon</span> { <span class="syntax-attr">width</span>: <span class="syntax-value">24px</span>; <span class="syntax-attr">height</span>: <span class="syntax-value">24px</span>; <span class="syntax-attr">color</span>: <span class="syntax-value">blue</span>; }
+
+<span class="syntax-tag">&lt;Icon</span> <span class="syntax-attr">icon</span>=<span class="syntax-string">"dashboard"</span> <span class="syntax-tag">/&gt;</span> <span class="syntax-comment">{/* Uses config className */}</span></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="gradient-bg text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div class="mb-6">
+        <h3 class="text-2xl font-bold mb-2">svgify-react</h3>
+        <p class="text-purple-200">Transform SVG files into optimized React components</p>
+      </div>
+      <div class="flex justify-center gap-6 mb-6">
+        <a href="https://github.com/bij7n/svgify-react" class="text-purple-200 hover:text-white transition">GitHub</a>
+        <a href="https://www.npmjs.com/package/svgify-react" class="text-purple-200 hover:text-white transition">NPM</a>
+        <a href="https://github.com/bij7n/svgify-react#readme"
+          class="text-purple-200 hover:text-white transition">Documentation</a>
+        <a href="https://github.com/bij7n/svgify-react/issues"
+          class="text-purple-200 hover:text-white transition">Issues</a>
+      </div>
+      <p class="text-purple-300 text-sm">MIT License • Made with ❤️ for the React community</p>
+    </div>
+  </footer>
+
+  <script>
+    // Copy to clipboard function
+    function copyToClipboard(text, button) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Copied!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.innerHTML = originalHTML;
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Package Manager Tabs
+    function showPmTab(pm) {
+      // Hide all content
+      document.querySelectorAll('.pm-content').forEach(el => el.classList.add('hidden'));
+      // Show selected content
+      document.getElementById(`pm-${pm}-cmd`).classList.remove('hidden');
+
+      // Update tab buttons
+      document.querySelectorAll('.pm-tab').forEach(btn => {
+        btn.classList.remove('active', 'bg-purple-600', 'text-white');
+        btn.classList.add('bg-gray-200');
+      });
+      document.getElementById(`pm-${pm}`).classList.add('active', 'bg-purple-600', 'text-white');
+      document.getElementById(`pm-${pm}`).classList.remove('bg-gray-200');
+    }
+
+    // Config Generator
+    function updateConfig() {
+      const config = {
+        inputDir: document.getElementById('configInputDir').value,
+        outputDir: document.getElementById('configOutputDir').value,
+      };
+
+      const iconMode = document.getElementById('configIconMode').value;
+      if (iconMode !== 'both') {
+        config.iconMode = iconMode;
+      }
+
+      const typescript = document.getElementById('configTypescript').value;
+      if (typescript !== 'true') {
+        config.typescript = false;
+      }
+
+      const className = document.getElementById('configClassName').value;
+      if (className && className !== 'icon') {
+        config.className = className;
+      }
+
+      const postGenerate = document.getElementById('configPostGenerate').value;
+      if (postGenerate) {
+        config.postGenerate = postGenerate;
+      }
+
+      document.getElementById('generatedConfig').textContent = JSON.stringify(config, null, 2);
+    }
+
+    function copyConfig() {
+      const config = document.getElementById('generatedConfig').textContent;
+      const btn = document.getElementById('copy-config-text');
+      navigator.clipboard.writeText(config).then(() => {
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.parentElement.classList.add('text-green-600');
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.parentElement.classList.remove('text-green-600');
+        }, 2000);
+      });
+    }
+
+    // Tabs
+    function showTab(tab) {
+      // Hide all contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+      });
+
+      // Remove active from all buttons
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active', 'bg-purple-600', 'text-white');
+        btn.classList.add('bg-gray-200');
+      });
+
+      // Show selected content
+      document.getElementById(`content-${tab}`).classList.remove('hidden');
+
+      // Mark button as active
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      activeBtn.classList.add('active');
+      activeBtn.classList.remove('bg-gray-200');
+    }
+
+    // Smooth scroll
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Event listeners
+    document.getElementById('configInputDir').addEventListener('input', updateConfig);
+    document.getElementById('configOutputDir').addEventListener('input', updateConfig);
+    document.getElementById('configIconMode').addEventListener('change', updateConfig);
+    document.getElementById('configClassName').addEventListener('input', updateConfig);
+    document.getElementById('configTypescript').addEventListener('change', updateConfig);
+    document.getElementById('configPostGenerate').addEventListener('input', updateConfig);
+
+    // Initialize config
+    updateConfig();
+  </script>
+</body>
+
+</html>
