@@ -1,6 +1,6 @@
 {
   "name": "svgify-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convert SVG files to optimized React components with zero runtime dependencies",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

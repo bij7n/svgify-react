@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * @svgify/react CLI
+ * svgify-react CLI
  * Command-line interface for generating React icon components from SVG files
  */
 
@@ -48,7 +48,7 @@ function loadConfig(): SvgifyConfig | null {
 }
 
 async function main() {
-  console.log('⚡ @svgify/react v1.0.0\n');
+  console.log('⚡ svgify-react v1.0.1\n');
   
   const config = loadConfig();
   

@@ -2,7 +2,8 @@
 
 Transform SVG files into optimized React components with zero runtime dependencies.
 
-[![npm version](https://badge.fury.io/js/@svgify%2Freact.svg)](https://www.npmjs.com/package/svgify-react)
+[![npm version](https://img.shields.io/npm/v/svgify-react.svg?style=flat-square)](https://www.npmjs.com/package/svgify-react)
+[![npm downloads](https://img.shields.io/npm/dm/svgify-react.svg?style=flat-square)](https://www.npmjs.com/package/svgify-react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features

@@ -1,5 +1,5 @@
 /**
- * @svgify/react - Convert SVG files to React components
+ * svgify-react - Convert SVG files to React components
  * Main entry point for programmatic API
  */
 
